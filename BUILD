@@ -6,5 +6,7 @@ rust_binary(
     srcs = [
         "main.rs",
     ],
-    deps = [],
+    deps = [
+        "@crates//:tokio"
+    ],
 )

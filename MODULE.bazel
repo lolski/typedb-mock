@@ -1,10 +1,35 @@
 module(name = "typedb")
 
-bazel_dep(name = "rules_rust", version = "0.44.0") # 0.67.0
+bazel_dep(name = "typedb_dependencies", version = "d0d17001a16c1cd3d2b63313b5c9dcae56998a75")
+git_override(
+    module_name = "typedb_dependencies",
+    remote = "https://github.com/lolski/dependencies-mock",
+    commit = "d0d17001a16c1cd3d2b63313b5c9dcae56998a75",
+)
+
+bazel_dep(name = "rules_rust", version = "0.67.0") # 0.67.0
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
     edition = "2021",
     versions = ["1.81.0"],
 )
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "crates",
+    cargo_lockfile = "@typedb_dependencies//library/crates:Cargo.lock",
+    manifests = ["@typedb_dependencies//library/crates:Cargo.toml"], # TODO
+    # annotations = { # TODO
+        # "cbindgen": [crate.annotation(gen_binaries = True)],
+        # "librocksdb-sys": [crate.annotation(rustc_flags = ["-C", "opt-level=3"])],
+    # },
+    supported_platform_triples = [
+        "aarch64-apple-darwin",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu",
+    ],
+)
+use_repo(crate, "crates")
 use_repo(rust, "rust_toolchains")
 register_toolchains("@rust_toolchains//:all")
