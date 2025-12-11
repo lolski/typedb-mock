@@ -13,6 +13,8 @@ rust.toolchain(
     edition = "2021",
     versions = ["1.81.0"],
 )
+use_repo(rust, "rust_toolchains")
+register_toolchains("@rust_toolchains//:all")
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.from_cargo(
     name = "crates",
@@ -31,5 +33,3 @@ crate.from_cargo(
     ],
 )
 use_repo(crate, "crates")
-use_repo(rust, "rust_toolchains")
-register_toolchains("@rust_toolchains//:all")
